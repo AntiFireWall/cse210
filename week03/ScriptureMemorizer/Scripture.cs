@@ -3,7 +3,7 @@
 public class Scripture
 {
     private Reference _reference;
-    public List<Word> _words = new List<Word>();
+    private List<Word> _words = new List<Word>();
 
     public Scripture(Reference reference, string text)
     {
@@ -20,18 +20,18 @@ public class Scripture
     {
         Random rnd = new Random();
         List<Word> shownWords = _words.Where(word => !word.IsHidden()).ToList();
-        if (shownWords.Count < 3)
+        if (shownWords.Count >= 3)
         {
-            for (int i = 0; i <= shownWords.Count; i++)
+            for (int i = 0; i < 3; i++)
             {
                 int order = shownWords[rnd.Next(0, shownWords.Count - 1)].OrderNumber();
                 _words[order].Hide();
                 shownWords = _words.Where(word => !word.IsHidden()).ToList();
             }
         }
-        else
+        else if (shownWords.Count < 3 && shownWords.Count > 0)
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i <= shownWords.Count; i++)
             {
                 int order = shownWords[rnd.Next(0, shownWords.Count - 1)].OrderNumber();
                 _words[order].Hide();

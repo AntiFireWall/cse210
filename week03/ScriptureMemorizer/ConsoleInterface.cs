@@ -2,6 +2,12 @@
 
 public class ConsoleInterface
 {
+    private static string _book;
+    private static string _chapter;
+    private static string _startVerse;
+    private static string _endVerse;
+    private static string _text;
+    
     public static void Interface()
     {
         Reference reference = new Reference("Genesis", 1, 5);
@@ -39,11 +45,6 @@ public class ConsoleInterface
     }
     public static async Task InterfaceWithApi()
     {
-        string book;
-        string chapter;
-        string startVerse;
-        string endVerse;
-        string text;
         
         bool run = true;
         bool gettingScripture = true;
@@ -54,15 +55,15 @@ public class ConsoleInterface
             Console.WriteLine("Enter the verse you want to memorize.");
             Console.WriteLine("(Make sure to enter the full name of the book, like '1+Nephi'. Also, put a '+' insted of space if there is a number before the book name)");
             Console.Write("Book: ");
-            book = Console.ReadLine().ToLower();
+            _book = Console.ReadLine().ToLower();
             Console.Write("Chapter: ");
-            chapter = Console.ReadLine();
+            _chapter = Console.ReadLine();
             Console.Write("Start Verse: ");
-            startVerse = Console.ReadLine();
+            _startVerse = Console.ReadLine();
             Console.Write("End Verse(Press Enter to leave empty if needed): ");
-            endVerse = Console.ReadLine();
-            text = await GetScriptureApi.GetScripture(book, chapter, startVerse, endVerse);
-            if (text != "")
+            _endVerse = Console.ReadLine();
+            _text = await GetScriptureApi.GetScripture(_book, _chapter, _startVerse, _endVerse);
+            if (_text != "")
             {
                 gettingScripture = false;
             }
@@ -73,6 +74,44 @@ public class ConsoleInterface
             }
         }
         
-            
+        Reference reference;
+        
+        if (_endVerse == "")
+        {
+            reference = new Reference(_book.ToUpper(), int.Parse(_chapter), int.Parse(_startVerse));
+        }
+        else
+        {
+            reference = new Reference(_book.ToUpper(), int.Parse(_chapter), int.Parse(_startVerse), int.Parse(_endVerse));
+        }
+        
+        Scripture scripture = new Scripture(reference, _text);
+        bool isHidden;
+        do
+        {
+            Console.Clear();
+            isHidden = scripture.IsCompletelyHidden();
+            Console.WriteLine(scripture.GetDisplayText());
+            Console.WriteLine("Press enter to hide words or write 'quit' to end the program.");
+            string input = Console.ReadLine().ToLower();
+            switch (input)
+            {
+                case "":
+                {
+                    scripture.HideRandomWords();
+                    break;
+                }
+                case "quit":
+                {
+                    run = false;
+                    break;
+                }
+                default:
+                {
+                    continue;
+                }
+            }
+        } while (!isHidden && run);
+
     }
 }
